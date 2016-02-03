@@ -8,7 +8,7 @@ t411 ibibah plugin for CouchPotato
 * Reboot CP
 * In the logs you should see it getting loaded
 * Go in Settings -> Searcher to activate T411
-
+* If you add "french" to required words plugin add french langage term to criteria ( more efficient for french users ) 
 idem for cpasbien
 
 * Télécharger le zip du plugin
@@ -17,5 +17,6 @@ idem for cpasbien
 * Redémarrez CouchPotato
 * Dans les logs vous devriez voir qu'il est chargé
 * Allez dans Settings -> Searcher pour activer T411
+* Si vous ajoutez "french" dans les mots requis le plugin ajoute le critère langue francaise à la requête ( plus efficace pour les utilisateurs francais) 
 
 idem pour cpasbien
