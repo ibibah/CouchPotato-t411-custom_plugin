@@ -1,5 +1,5 @@
-# CouchPotato-t411-custom_plugin
-t411 custom plugin for CouchPotato
+﻿# CouchPotato-t411-ibibah_plugin
+t411 ibibah plugin for CouchPotato
 
 
 * Download a zip of the plugin
@@ -9,6 +9,7 @@ t411 custom plugin for CouchPotato
 * In the logs you should see it getting loaded
 * Go in Settings -> Searcher to activate T411
 
+idem for cpasbien
 
 * Télécharger le zip du plugin
 * Créez un répertoire t411 dans votre répertoire customs_plugin, qui est situé dans votre répertoire de config. Regardez dans Settings -> About -> Directories (le 2ème répertoire est votre répertoire de config)
@@ -16,3 +17,5 @@ t411 custom plugin for CouchPotato
 * Redémarrez CouchPotato
 * Dans les logs vous devriez voir qu'il est chargé
 * Allez dans Settings -> Searcher pour activer T411
+
+idem pour cpasbien
