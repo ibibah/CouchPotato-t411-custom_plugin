@@ -95,24 +95,14 @@ class T411_Ibibah(TorrentProvider, MovieProvider):
         if not self.apiTermsTree:
             self.apiTermsTree = self.getJsonData(self.urls['terms_tree'], None, **self.kwargs)
 
-        # Deal with movie genre
-        moviegenre = movie['info']['genres']
-
-        if 'Animation' in moviegenre:
-            # Animation
-            subcat="455"
-        elif 'Documentaire' in moviegenre or 'Documentary' in moviegenre:
-            # Documentaire
-            subcat="634"
-        else:
-            # Film    
-            subcat="631"
+        # Animation, Documentaire, Film
+        subcats={ "455", "634", "631" }
         
         # Deal with quality and 3D Flag
         
         t411_3dquality_numbers = {}       
         if quality['custom']['3d']==1:
-            t411_3dquality_numbers.update([(key, value) for key, value in self.apiTermsTree[subcat]["9"]['terms'].iteritems() if (re.search('3d', value, re.IGNORECASE))])
+            t411_3dquality_numbers.update([(key, value) for key, value in self.apiTermsTree[subcats[0]]["9"]['terms'].iteritems() if (re.search('3d', value, re.IGNORECASE))])
             
         t411_quality_numbers = self.getCatId(quality)
         if not t411_quality_numbers:
@@ -121,7 +111,7 @@ class T411_Ibibah(TorrentProvider, MovieProvider):
         # construct result   
         
         # api subCat
-        result['subCat'] = subcat
+        result['subCats'] = subcats
              
         # api terms for each quality
         terms = ""     
@@ -154,42 +144,48 @@ class T411_Ibibah(TorrentProvider, MovieProvider):
         # get more precise params function quality genre and frenchFlag
         params = self.getSearchParams(movie, quality, frenchFlag)
         
-        # to deal with french title and encoding, we smplify the string
+        # to deal with french title and encoding, we simplify the string
         # t411 dont take care of accent of title so simplifyString(title)
-        url = self.urls['search'] % ( tryUrlencode('%s %s' % (simplifyString(title), movie['info']['year'])), params['subCat']) + params['terms']
-        
-
-        log.debug('t411_ibibah : SearchOnTitle URL : %s' % url)
+        urls = [ self.urls['search'] % ( tryUrlencode('%s %s' % (simplifyString(title), movie['info']['year'])), subCat) + params['terms'] for subCat in params['subCats'] ]
         
         # search call 
-        data = self.getJsonData(url, None, **self.kwargs)
-        if data:
-            if 'torrents' in data:
-                for torrent in data['torrents']:
-                    # for couchpotato detection
-                    # we replace and add some info in the torrent name
-                    # suppress all '(...)' because can be a problem for couchpotato name detection
-                    newTitle = re.sub('\(.*\)','', torrent['name'])
-                    # add frenchFlag + label quality to be sure couchpotato recognize quality
-                    namesuffix =(' french ' if frenchFlag else ' ') + quality['label']
-                    # convert size
-                    size =  torrent['size']
-                    sizeint = tryInt(size, 0) / 1024  # Kb
-                    results.append({
-                                'id': torrent['id'],
-                                'name': newTitle + namesuffix,
-                                'url': self.urls['download'] % torrent['id'],
-                                'detail_url': self.urls['detail'] % torrent['id'],
-                                'size': self.parseSize(str(sizeint) + ' kb'),
-                                'seeders': tryInt(torrent['seeders']),
-                                'leechers': tryInt(torrent['leechers']),
-                                'age': self.addedTimeToDays(torrent['added'])
-                            })
-                    log.debug('t411_ibibah : SearchOnTitle Found : %s' % torrent['name'])
-            if 'total' in data:
-                log.debug('t411_ibibah : SearchOnTitle Total Found : %s' % data['total'])
-        else:
-            log.warning('t411_ibibah : SearchOnTitle data result is empty!!!')
+        for url in urls:
+            log.debug('t411_ibibah : SearchOnTitle URL : %s' % url)
+            
+            data = self.getJsonData(url, None, **self.kwargs)
+            if data:
+                if 'torrents' in data:
+                    for torrent in data['torrents']:
+                        # for couchpotato detection
+                        # we replace and add some info in the torrent name
+                        # suppress all '(...)' because can be a problem for couchpotato name detection
+                        newTitle = re.sub('\(.*\)','', torrent['name'])
+                        # add frenchFlag + label quality to be sure couchpotato recognize quality
+                        namesuffix =(' french ' if frenchFlag else ' ') + quality['label']
+                        # convert size
+                        size =  torrent['size']
+                        sizeint = tryInt(size, 0) / 1024  # Kb
+                        results.append({
+                                    'id': torrent['id'],
+                                    'name': newTitle + namesuffix,
+                                    'url': self.urls['download'] % torrent['id'],
+                                    'detail_url': self.urls['detail'] % torrent['id'],
+                                    'size': self.parseSize(str(sizeint) + ' kb'),
+                                    'seeders': tryInt(torrent['seeders']),
+                                    'leechers': tryInt(torrent['leechers']),
+                                    'age': self.addedTimeToDays(torrent['added'])
+                                })
+                        log.debug('t411_ibibah : SearchOnTitle Found : %s' % torrent['name'])
+                    if 'total' in data:
+                        log.debug('t411_ibibah : SearchOnTitle Total Found : %s' % data['total'])
+                else:
+                    log.warning('t411_ibibah : SearchOnTitle data result no torrents!!!')
+            else:
+                log.warning('t411_ibibah : SearchOnTitle data result is empty!!!')
+            
+            # results found in url stop search
+            if len(results) > 0:
+                break;
 
     # convert time string to age in days
     def addedTimeToDays(self, addedTime):
