@@ -16,13 +16,13 @@ class T411_Ibibah(TorrentProvider, MovieProvider):
     
     # urls use by class
     urls = {
-        'test': 'http://www.t411.ai/',
-        'detail': 'http://www.t411.ai/torrents/?id=%s',
-        'login': 'https://api.t411.ai/auth',
-        'login_check': 'https://api.t411.ai/categories/tree',
-        'search': 'https://api.t411.ai/torrents/search/%s?cid=%s&offset=0&limit=100',
-        'terms_tree': 'https://api.t411.ai/terms/tree',
-        'download': 'https://api.t411.ai/torrents/download/%s',
+        'test': 'http://www.t411.al/',
+        'detail': 'http://www.t411.al/torrents/?id=%s',
+        'login': 'https://api.t411.al/auth',
+        'login_check': 'https://api.t411.al/categories/tree',
+        'search': 'https://api.t411.al/torrents/search/%s?cid=%s&offset=0&limit=100',
+        'terms_tree': 'https://api.t411.al/terms/tree',
+        'download': 'https://api.t411.al/torrents/download/%s',
     }
     # user token 
     token = None
